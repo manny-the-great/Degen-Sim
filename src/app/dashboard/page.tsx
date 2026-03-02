@@ -1,80 +1,135 @@
-import Link from "next/link";
+"use client";
 
-export default function Dashboard() {
+import { motion } from "framer-motion";
+import DashboardNavbar from "@/components/dashboard/DashboardNavbar";
+import StatCard from "@/components/dashboard/StatCard";
+import EquityChart from "@/components/dashboard/EquityChart";
+import Watchlist from "@/components/dashboard/Watchlist";
+import PositionsTable from "@/components/dashboard/PositionsTable";
+import QuickActions from "@/components/dashboard/QuickActions";
+import BackgroundGrid from "@/components/BackgroundGrid";
+
+const stats = [
+    {
+        label: "Total Demo Balance",
+        value: "10,000.00",
+        prefix: "$",
+    },
+    {
+        label: "Total PNL",
+        value: "+$1,284.23",
+        sub: "+12.84% all time",
+        subPositive: true,
+        colorClass: "text-emerald-400",
+    },
+    {
+        label: "Win Rate",
+        value: "63%",
+        sub: "38 of 60 trades",
+        subPositive: true,
+    },
+    {
+        label: "Global Rank",
+        value: "#142",
+        sub: "Top 5% globally",
+        subPositive: true,
+    },
+];
+
+const containerVariants = {
+    hidden: {},
+    visible: {
+        transition: {
+            staggerChildren: 0.08,
+        },
+    },
+};
+
+export default function DashboardPage() {
     return (
-        <main className="min-h-screen bg-[#050505] flex flex-col items-center justify-center relative">
-            {/* Grid background */}
-            <div
-                className="absolute inset-0"
-                style={{
-                    backgroundImage: `
-            linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px)
-          `,
-                    backgroundSize: "60px 60px",
-                }}
-            />
+        <main className="min-h-screen bg-[#050505] relative overflow-x-hidden">
+            {/* Background */}
+            <BackgroundGrid />
 
-            <div className="relative z-10 text-center space-y-6 px-6">
-                {/* Status */}
-                <div className="flex items-center justify-center gap-2 mb-8">
-                    <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse" />
-                    <span className="text-[11px] font-mono text-white/25 tracking-[0.15em] uppercase">
-            // SIMULATOR — INITIALIZING
+            {/* Navbar */}
+            <DashboardNavbar />
+
+            {/* Page Content */}
+            <motion.div
+                className="relative z-10 pt-24 pb-16 px-4 sm:px-8 md:px-12 lg:px-20 xl:px-24 max-w-[1440px] mx-auto space-y-5"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+            >
+                {/* Page header */}
+                <div className="flex items-center justify-between mb-2">
+                    <div>
+                        <div className="flex items-center gap-2 mb-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot" />
+                            <span className="text-[11px] font-mono text-white/20 uppercase tracking-[0.15em]">
+                                // Simulator — Live
+                            </span>
+                        </div>
+                        <h1 className="text-2xl font-bold text-white tracking-[-0.03em]">
+                            Overview
+                        </h1>
+                    </div>
+                    <div className="hidden sm:flex items-center gap-4">
+                        <span className="text-[10px] font-mono text-white/15 uppercase tracking-wider">
+                            UTC {new Date().toISOString().slice(11, 19)}
+                        </span>
+                        <span className="h-3 w-[1px] bg-white/10" />
+                        <span className="text-[10px] font-mono text-white/15 uppercase tracking-wider">
+                            Feed: Demo v2.4
+                        </span>
+                    </div>
+                </div>
+
+                {/* ─── TOP STATS ROW ─── */}
+                <motion.div
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="visible"
+                >
+                    {stats.map((s, i) => (
+                        <StatCard
+                            key={s.label}
+                            index={i}
+                            label={s.label}
+                            value={s.value}
+                            sub={s.sub}
+                            subPositive={s.subPositive}
+                            prefix={s.prefix}
+                            colorClass={s.colorClass}
+                        />
+                    ))}
+                </motion.div>
+
+                {/* ─── MAIN GRID: Chart + Watchlist ─── */}
+                <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] xl:grid-cols-[1fr_320px] gap-3">
+                    <EquityChart />
+                    <Watchlist />
+                </div>
+
+                {/* ─── QUICK ACTIONS ─── */}
+                <div className="flex items-center gap-4 py-1">
+                    <QuickActions />
+                </div>
+
+                {/* ─── POSITIONS TABLE ─── */}
+                <PositionsTable />
+
+                {/* Footer micro detail */}
+                <div className="flex items-center justify-between pt-2">
+                    <span className="text-[10px] font-mono text-white/10 uppercase tracking-widest">
+                        DegenSim — Demo Environment v2.4.1
+                    </span>
+                    <span className="text-[10px] font-mono text-white/10 uppercase tracking-widest">
+                        All data simulated — Not financial advice
                     </span>
                 </div>
-
-                {/* Title */}
-                <h1 className="text-4xl sm:text-5xl font-bold text-white tracking-[-0.03em]">
-                    Dashboard
-                </h1>
-                <p className="text-white/30 text-sm max-w-md mx-auto leading-relaxed">
-                    The simulator dashboard is under construction. Real-time market
-                    analysis, signal processing, and risk management tools are being
-                    calibrated.
-                </p>
-
-                {/* Placeholder cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-12 max-w-2xl mx-auto">
-                    {[
-                        { label: "Portfolio Value", value: "$0.00" },
-                        { label: "Active Positions", value: "0" },
-                        { label: "Win Rate", value: "—" },
-                    ].map((item) => (
-                        <div
-                            key={item.label}
-                            className="border border-white/[0.06] bg-white/[0.02] p-5 space-y-2"
-                        >
-                            <p className="text-[10px] text-white/20 font-mono uppercase tracking-widest">
-                                {item.label}
-                            </p>
-                            <p className="text-2xl text-white/60 font-bold tabular-nums font-mono">
-                                {item.value}
-                            </p>
-                        </div>
-                    ))}
-                </div>
-
-                {/* Back link */}
-                <Link
-                    href="/"
-                    className="inline-flex items-center gap-2 mt-8 text-[13px] text-white/30 hover:text-white/60 transition-colors font-mono uppercase tracking-wider"
-                >
-                    <svg
-                        className="w-3.5 h-3.5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                    >
-                        <path
-                            strokeLinecap="square"
-                            d="M11 17l-5-5m0 0l5-5m-5 5h12"
-                        />
-                    </svg>
-                    Back to Terminal
-                </Link>
-            </div>
+            </motion.div>
         </main>
     );
 }
